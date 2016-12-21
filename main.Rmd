@@ -1,0 +1,99 @@
+---
+title: "Fraser River sockeye salmon Analysis"
+author: "Hao Ye"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  html_document: 
+    toc: true
+    number_sections: true
+---
+
+# Preamble 
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rEDM)
+library(rjags)
+library(reshape2)
+library(rgl)
+library(ggplot2)
+library(gridExtra)
+library(xtable)
+library(knitr)
+knit_hooks$set(webgl = hook_webgl)
+
+```
+
+```{r load script files}
+source("prelim_analysis.R")
+source("stats.R")
+source("prediction_models.R")
+source("misc_calculations.R")
+source("figures.R")
+source("tables.R")
+```
+
+# Setup and Preliminary Analysis
+
+```{r initial setup, eval = FALSE}
+preprocess_data()
+write_model_files()
+```
+
+```{r nonlinear test, eval = FALSE}
+compute_nonlinearity_aggregated()
+test_nonlinearity_aggregated()
+compute_nonlinearity_stock()
+```
+
+# Produce Forecasts
+
+```{r run EDM models, eval = FALSE}
+simple_EDM()
+multivariate_EDM()
+```
+
+```{r run Ricker models, eval = FALSE}
+standard_ricker()
+extended_ricker()
+```
+
+```{r summarize results for best models, eval = FALSE}
+extract_results_for_best_models()
+```
+
+# Figures and Output
+
+```{r main text figures, eval = FALSE}
+compute_seymour_ricker_params()
+plot_seymour_ricker_halves() # figure 1a
+compute_seymour_ricker_env_params()
+plot_total_returns() # figure 2
+plot_rho_comparison() # figure 4
+```
+
+```{r extended Ricker 3d prediction surface, webgl = TRUE}
+plot_seymour_env_surface(plot_ricker = TRUE) # figure 1b
+```
+
+```{r multivariate EDM prediction surface, webgl = TRUE}
+plot_seymour_env_surface(plot_ricker = FALSE) # figure 1c
+```
+
+
+```{r supplemental text figures, eval = FALSE}
+plot_nonlinearity() # figure S2
+plot_mae_comparison() # figure S3
+compute_chilko_smolt_forecasts()
+plot_chilko_smolt_model() # figure S4
+plot_late_shuswap_CI() # figure S5
+```
+
+```{r tables, eval = FALSE}
+print_env_comparison_table() # table 1
+print_nonlinearity_table() # table S1
+print_comparison_table() # table S2
+compute_ccm()
+print_ccm_table() # table S3
+print_EDM_env_models() # table S4
+```

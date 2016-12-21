@@ -1,0 +1,15 @@
+model
+        {
+        for (i in 1:length(recruits))
+        {
+        y[i] <- alpha - beta * spawners[i] + log(spawners[i]) + g * env[i]
+        recruits[i] ~ dlnorm(y[i], tau_r)
+        }
+        
+        # priors
+        g ~ dnorm(0, 1e-6)
+        alpha ~ dnorm(0, 1e-6)
+        beta ~ dnorm(0, 1e-6)
+        tau_r ~ dgamma(0.001, 0.001)
+        sigma <- pow(tau_r, -2)
+        }
