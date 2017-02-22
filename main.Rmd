@@ -80,7 +80,6 @@ plot_seymour_env_surface(plot_ricker = TRUE) # figure 1b
 plot_seymour_env_surface(plot_ricker = FALSE) # figure 1c
 ```
 
-
 ```{r supplemental text figures, eval = FALSE}
 plot_nonlinearity() # figure S2
 plot_mae_comparison() # figure S3
@@ -96,4 +95,16 @@ print_comparison_table() # table S2
 compute_ccm()
 print_ccm_table() # table S3
 print_EDM_env_models() # table S4
+```
+
+# Figures II
+
+Same surfaces as previous, but this time, only have the lines on the z-axis go to the surface.
+
+```{r extended Ricker 3d prediction surface II, webgl = TRUE}
+plot_seymour_env_surface(plot_ricker = TRUE, surface_z = TRUE)
+```
+
+```{r multivariate EDM prediction surface II, webgl = TRUE}
+plot_seymour_env_surface(plot_ricker = FALSE, surface_z = TRUE) # figure 1c
 ```

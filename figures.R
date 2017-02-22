@@ -311,7 +311,7 @@ plot_late_shuswap_CI <- function(file = NULL, width = 6, height = 4.5)
     return()
 }
 
-plot_seymour_env_surface <- function(plot_ricker = FALSE)
+plot_seymour_env_surface <- function(plot_ricker = FALSE, surface_z = FALSE)
 {
     ricker_func <- function(S, E)
     {
@@ -358,15 +358,17 @@ plot_seymour_env_surface <- function(plot_ricker = FALSE)
     mtext3d("Temperature", "y--", line = 1.5)
     mtext3d("Recruitment", "z++", line = 1.5)
     box3d()
-    sapply(1:length(recruits), function(i) {rgl.lines(rep(spawners[i], 2), 
-                                                      rep(env[i], 2), 
-                                                      c(min(recruits), recruits[i]), 
-                                                      color = "gray", size = 1)
-    })
+
+    # generate prediction surface
+    recruit_endpoints <- rep.int(min(recruits), length(recruits))
     if(plot_ricker)
     {
         z_ricker <- mapply(ricker_func, x_mat, y_mat)
-        meshsurf3d(x, y, matrix(z_ricker, nrow = grid_size), color = "gray20")
+        recruit_surface <- matrix(z_ricker, nrow = grid_size)
+        if(surface_z)
+        {
+            recruit_endpoints <- mapply(ricker_func, spawners, env)
+        }
     }
     else
     {
@@ -385,9 +387,66 @@ plot_seymour_env_surface <- function(plot_ricker = FALSE)
                           pred = c(length(recruits)+1, NROW(block)), 
                           tp = 0, columns = c(2, 3), stats_only = FALSE)
         z_simplex <- out[[1]]$model_output[(length(recruits)+1):NROW(block), "pred"]
-        z_simplex <- matrix(z_simplex, nrow = grid_size, byrow = TRUE)
-        meshsurf3d(x, y, z_simplex, color = "gray20")
+        recruit_surface <- matrix(z_simplex, nrow = grid_size, byrow = TRUE)
+        if(surface_z)
+        {
+            # for each i
+            for(k in seq_along(recruits))
+            {
+                # find grid cell that matches
+                i <- min(which(spawners[k] < c(x, Inf)), grid_size)
+                j <- min(which(env[k] < c(y, Inf)), grid_size)
+                
+                x_wt <- (spawners[k] - x[i-1]) / (x[j] - x[i-1])
+                y_wt <- (env[k] - y[j-1]) / (y[j] - y[j-1])
+                
+                x1 <- x[i-1]
+                y1 <- y[j-1]
+                z1 <- recruit_surface[i-1, j-1]
+                x3 <- x[i]
+                y3 <- y[j]
+                z3 <- recruit_surface[i, j]
+                if(y_wt > x_wt)
+                {
+                    x2 <- x[i-1]
+                    y2 <- y[j]
+                    z2 <- recruit_surface[i-1, j]
+                } else {
+                    x2 <- x[i]
+                    y2 <- y[j-1]
+                    z2 <- recruit_surface[i, j-1]
+                }
+                lambda1 <- ((y2 - y3)*(spawners[k] - x3) + (x3 - x2)*(env[k] - y3)) / 
+                    ((y2 - y3)*(x1 - x3) + (x3 - x2)*(y1 - y3))
+                lambda2 <- ((y3 - y1)*(spawners[k] - x3) + (x1 - x3)*(env[k] - y3)) / 
+                    ((y2 - y3)*(x1 - x3) + (x3 - x2)*(y1 - y3))
+                lambda3 <- 1 - lambda1 - lambda2
+                recruit_endpoints[k] <- z1 * lambda1 + z2 * lambda2 + z3 * lambda3
+                # corners <- expand.grid(x_idx = c(x_upper-1, x_upper), 
+                #                        y_idx = c(y_upper-1, y_upper))
+                # corners$s <- x[corners$x_idx]
+                # corners$e <- y[corners$y_idx]
+                # corners$r <- recruit_surface[cbind(pmin(corners$x_idx, grid_size), 
+                #                                    pmin(corners$y_idx, grid_size))]
+                # distances <- sapply(1:4, function(i) {
+                #     sqrt((spawners[k] - corners$s[i])^2 + 
+                #              (env[k] - corners$e[i])^2)
+                # })
+                # recruit_endpoints[k] <- sum(corners$r * distances) / sum(distances)
+            }
+        }
     }
+    
+    # draw surface
+    meshsurf3d(x, y, recruit_surface, color = "gray20")
+    
+    # draw lines for each point
+    sapply(1:length(recruits), function(i) {rgl.lines(rep(spawners[i], 2), 
+                                                      rep(env[i], 2), 
+                                                      c(recruit_endpoints[i], recruits[i]), 
+                                                      color = "gray", size = 1)
+    })
+    
     p <- matrix(c(-0.8, -0.6, 0, 0, 
                   0.2, -0.3, 0.9, 0, 
                   -0.6, 0.7, 0.3, 0, 
