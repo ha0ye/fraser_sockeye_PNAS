@@ -311,7 +311,8 @@ plot_late_shuswap_CI <- function(file = NULL, width = 6, height = 4.5)
     return()
 }
 
-plot_seymour_env_surface <- function(plot_ricker = FALSE, surface_z = FALSE)
+plot_seymour_env_surface <- function(plot_ricker = FALSE, surface_z = FALSE, 
+                                     plot_file = NULL)
 {
     ricker_func <- function(S, E)
     {
@@ -451,7 +452,13 @@ plot_seymour_env_surface <- function(plot_ricker = FALSE, surface_z = FALSE)
                   0.2, -0.3, 0.9, 0, 
                   -0.6, 0.7, 0.3, 0, 
                   0, 0, 0, 1), nrow = 4, byrow = TRUE)
-    par3d(userMatrix = p)
+    par3d(userMatrix = p, 
+          windowRect = c(50, 50, 850, 850), 
+          zoom = 1.05)
+    
+    if(!is.null(plot_file))
+        rgl.postscript(plot_file, fmt = "pdf")
+    
     return()
 }
 
