@@ -32,7 +32,7 @@ compute_ricker_curve <- function(recruits, spawners, num_iter = 30000, num_burni
 
 extract_results_for_best_models <- function()
 {
-    simplex_univar_stats <- readRDS("stats_univariate_EDM.RDS")
+    simplex_univar_stats <- readRDS("stats_simple_EDM.RDS")
     simplex_univar_stats$data <- "univariate"
     simplex_univar_stats$columns <- "eff"
     simplex_univar_stats$model <- "EDM"
@@ -58,7 +58,7 @@ extract_results_for_best_models <- function()
     
     # get results and save
     ricker_univar_preds <- readRDS("results_standard_ricker.RDS")
-    simplex_univar_preds <- readRDS("results_univariate_EDM.RDS")
+    simplex_univar_preds <- readRDS("results_simple_EDM.RDS")
     ricker_multivar_preds <- readRDS("results_extended_ricker.RDS")
     simplex_multivar_preds <- readRDS("results_multivariate_EDM.RDS")
     

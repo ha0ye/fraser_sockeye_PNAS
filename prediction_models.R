@@ -306,7 +306,7 @@ block_lnlp_4 <- function(block, target_column, columns, norm = FALSE)
                                columns = columns, stats_only = FALSE)
             
             for(j in 1:length(columns))
-                preds[[j]][pred_index] <- temp[[j]]$model_output$pred[pred_index]
+                preds[[j]][pred_index] <- temp[[j, "model_output"]]$pred[pred_index]
         }
     }
     else
@@ -321,7 +321,7 @@ block_lnlp_4 <- function(block, target_column, columns, norm = FALSE)
                                first_column_time = TRUE, 
                                columns = columns, stats_only = FALSE)
             
-            preds[pred_index] <- temp[[1]]$model_output$pred[pred_index]
+            preds[pred_index] <- temp[[1, "model_output"]]$pred[pred_index]
         }
     }
     return(preds)
@@ -351,8 +351,8 @@ block_lnlp_4_v <- function(block, target_column, columns)
                            first_column_time = TRUE, 
                            columns = columns, stats_only = FALSE)
         
-        pred[pred_index] <- temp[[1]]$model_output$pred[pred_index]
-        pred_var[pred_index] <- temp[[1]]$model_output$pred_var[pred_index]
+        pred[pred_index] <- temp[[1, "model_output"]]$pred[pred_index]
+        pred_var[pred_index] <- temp[[1, "model_output"]]$pred_var[pred_index]
     }
     return(cbind(pred, pred_var))
 }

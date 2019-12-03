@@ -132,7 +132,7 @@ plot_rho_comparison <- function()
     rhos <- t(acast(stats, stk ~ model * data, value.var = "rho"))
     rhos <- rhos[c(4, 3, 2, 1),]
     
-    par(lwd = 2, mar = c(8, 4, 1, 10), xpd = TRUE)
+    par(lwd = 2, mar = c(8, 5, 1, 12), xpd = TRUE)
     barplot(rhos, beside = TRUE, density = c(20, -1), space = c(0, 0.5), 
             col = c("dodgerblue", "dodgerblue", "orange1", "orange1"), 
             las = 2, xlab = "", 
